@@ -1,5 +1,4 @@
 H5P.MemoryGame = (function (EventDispatcher, $) {
-
   // We don't want to go smaller than 100px per card(including the required margin)
   var CARD_MIN_SIZE = 100; // PX
   var CARD_STD_SIZE = 116; // PX
@@ -31,20 +30,24 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
     numInstances++;
 
     // Add defaults
-    parameters = $.extend(true, {
-      l10n: {
-        cardTurns: 'Card turns',
-        timeSpent: 'Time spent',
-        feedback: 'Good work!',
-        tryAgain: 'Reset',
-        closeLabel: 'Close',
-        label: 'Memory Game. Find the matching cards.',
-        done: 'All of the cards have been found.',
-        cardPrefix: 'Card %num: ',
-        cardUnturned: 'Unturned.',
-        cardMatched: 'Match found.'
-      }
-    }, parameters);
+    parameters = $.extend(
+      true,
+      {
+        l10n: {
+          cardTurns: "Card turns",
+          timeSpent: "Time spent",
+          feedback: "Good work!",
+          tryAgain: "Reset",
+          closeLabel: "Close",
+          label: "Memory Game. Find the matching cards.",
+          done: "All of the cards have been found.",
+          cardPrefix: "Card %num: ",
+          cardUnturned: "Unturned.",
+          cardMatched: "Match found.",
+        },
+      },
+      parameters
+    );
 
     /**
      * Check if these two cards belongs together.
@@ -72,7 +75,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
       numFlipped -= 2;
       removed += 2;
 
-      var isFinished = (removed === cards.length);
+      var isFinished = removed === cards.length;
 
       // Remove them from the game.
       card.remove(!isFinished);
@@ -91,8 +94,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
             // Game done
             card.makeUntabbable();
             finished();
-          }
-          else {
+          } else {
             // Popup is closed, continue.
             timer.play();
 
@@ -101,8 +103,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
             }
           }
         });
-      }
-      else if (isFinished) {
+      } else if (isFinished) {
         // Game done
         card.makeUntabbable();
         finished();
@@ -116,7 +117,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
     var finished = function () {
       timer.stop();
       $taskComplete.show();
-      $feedback.addClass('h5p-show'); // Announce
+      $feedback.addClass("h5p-show"); // Announce
       $bottom.focus();
       score = 1;
 
@@ -124,10 +125,10 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
 
       if (parameters.behaviour && parameters.behaviour.allowRetry) {
         // Create retry button
-        var retryButton = createButton('reset', parameters.l10n.tryAgain || 'Reset', function () {
+        var retryButton = createButton("reset", parameters.l10n.tryAgain || "Reset", function () {
           // Trigger handler (action)
 
-          retryButton.classList.add('h5p-memory-transout');
+          retryButton.classList.add("h5p-memory-transout");
           setTimeout(function () {
             // Remove button on nextTick to get transition effect
             $wrapper[0].removeChild(retryButton);
@@ -135,14 +136,14 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
 
           resetGame();
         });
-        retryButton.classList.add('h5p-memory-transin');
+        retryButton.classList.add("h5p-memory-transin");
         setTimeout(function () {
           // Remove class on nextTick to get transition effectupd
-          retryButton.classList.remove('h5p-memory-transin');
+          retryButton.classList.remove("h5p-memory-transin");
         }, 0);
 
         // Same size as cards
-        retryButton.style.fontSize = (parseFloat($wrapper.children('ul')[0].style.fontSize) * 0.75) + 'px';
+        retryButton.style.fontSize = parseFloat($wrapper.children("ul")[0].style.fontSize) * 0.75 + "px";
 
         $wrapper[0].appendChild(retryButton); // Add to DOM
       }
@@ -153,13 +154,12 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @private
      */
     var resetGame = function () {
-
       // Reset cards
       removed = 0;
       score = 0;
 
       // Remove feedback
-      $feedback[0].classList.remove('h5p-show');
+      $feedback[0].classList.remove("h5p-show");
       $taskComplete.hide();
 
       // Reset timer and counter
@@ -179,9 +179,9 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         }
 
         // Scale new layout
-        $wrapper.children('ul').children('.h5p-row-break').removeClass('h5p-row-break');
+        $wrapper.children("ul").children(".h5p-row-break").removeClass("h5p-row-break");
         maxWidth = -1;
-        self.trigger('resize');
+        self.trigger("resize");
         cards[0].setFocus();
       }, 600);
     };
@@ -191,20 +191,29 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @private
      */
     var createButton = function (name, label, action) {
-      var buttonElement = document.createElement('div');
-      buttonElement.classList.add('h5p-memory-' + name);
+      var buttonElement = document.createElement("div");
+      buttonElement.classList.add("h5p-memory-" + name);
       buttonElement.innerHTML = label;
-      buttonElement.setAttribute('role', 'button');
+      buttonElement.setAttribute("role", "button");
       buttonElement.tabIndex = 0;
-      buttonElement.addEventListener('click', function () {
-        action.apply(buttonElement);
-      }, false);
-      buttonElement.addEventListener('keypress', function (event) {
-        if (event.which === 13 || event.which === 32) { // Enter or Space key
-          event.preventDefault();
+      buttonElement.addEventListener(
+        "click",
+        function () {
           action.apply(buttonElement);
-        }
-      }, false);
+        },
+        false
+      );
+      buttonElement.addEventListener(
+        "keypress",
+        function (event) {
+          if (event.which === 13 || event.which === 32) {
+            // Enter or Space key
+            event.preventDefault();
+            action.apply(buttonElement);
+          }
+        },
+        false
+      );
       return buttonElement;
     };
 
@@ -216,7 +225,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @param {H5P.MemoryGame.Card} mate
      */
     var addCard = function (card, mate) {
-      card.on('flip', function () {
+      card.on("flip", function () {
         if (audioCard) {
           audioCard.stopAudio();
         }
@@ -228,7 +237,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         card.makeTabbable();
 
         popup.close();
-        self.triggerXAPI('interacted');
+        self.triggerXAPI("interacted");
         // Keep track of time spent
         timer.play();
 
@@ -236,8 +245,8 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         numFlipped++;
 
         // Announce the card unless it's the last one and it's correct
-        var isMatched = (flipped === mate);
-        var isLast = ((removed + 2) === cards.length);
+        var isMatched = flipped === mate;
+        var isLast = removed + 2 === cards.length;
         card.updateLabel(isMatched, !(isMatched && isLast));
 
         if (flipped !== undefined) {
@@ -248,8 +257,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
           setTimeout(function () {
             check(card, matie, mate);
           }, 800);
-        }
-        else {
+        } else {
           if (flipBacks.length > 1) {
             // Turn back any flipped cards
             processFlipBacks();
@@ -262,13 +270,13 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         // Count number of cards turned
         counter.increment();
       });
-      card.on('audioplay', function () {
+      card.on("audioplay", function () {
         if (audioCard) {
           audioCard.stopAudio();
         }
         audioCard = card;
       });
-      card.on('audiostop', function () {
+      card.on("audiostop", function () {
         audioCard = undefined;
       });
 
@@ -287,15 +295,15 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
             if (cards[i] === card) {
               // Found current card
 
-              var nextCard, fails = 0;
+              var nextCard,
+                fails = 0;
               do {
                 fails++;
-                nextCard = cards[i + (direction * fails)];
+                nextCard = cards[i + direction * fails];
                 if (!nextCard) {
                   return; // No more cards
                 }
-              }
-              while (nextCard.isRemoved());
+              } while (nextCard.isRemoved());
 
               card.makeUntabbable();
               nextCard.setFocus();
@@ -307,8 +315,8 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
       };
 
       // Register handlers for moving focus to next and previous card
-      card.on('next', createCardChangeFocusHandler(1));
-      card.on('prev', createCardChangeFocusHandler(-1));
+      card.on("next", createCardChangeFocusHandler(1));
+      card.on("prev", createCardChangeFocusHandler(-1));
 
       /**
        * Create event handler for moving focus to the first or the last card
@@ -322,12 +330,11 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         return function () {
           var focusSet = false;
           for (var i = 0; i < cards.length; i++) {
-            var j = (direction === -1 ? cards.length - (i + 1) : i);
+            var j = direction === -1 ? cards.length - (i + 1) : i;
             if (!focusSet && !cards[j].isRemoved()) {
               cards[j].setFocus();
               focusSet = true;
-            }
-            else if (cards[j] === card) {
+            } else if (cards[j] === card) {
               card.makeUntabbable();
             }
           }
@@ -335,8 +342,8 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
       };
 
       // Register handlers for moving focus to first and last card
-      card.on('first', createEndCardFocusHandler(1));
-      card.on('last', createEndCardFocusHandler(-1));
+      card.on("first", createEndCardFocusHandler(1));
+      card.on("last", createEndCardFocusHandler(-1));
 
       cards.push(card);
     };
@@ -355,7 +362,8 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @private
      */
     var getCardsToUse = function () {
-      var numCardsToUse = (parameters.behaviour && parameters.behaviour.numCardsToUse ? parseInt(parameters.behaviour.numCardsToUse) : 0);
+      var numCardsToUse =
+        parameters.behaviour && parameters.behaviour.numCardsToUse ? parseInt(parameters.behaviour.numCardsToUse) : 0;
       if (numCardsToUse <= 2 || numCardsToUse >= parameters.cards.length) {
         // Use all cards
         return parameters.cards;
@@ -383,9 +391,8 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
     var cardStyles, invertShades;
     if (parameters.lookNFeel) {
       // If the contrast between the chosen color and white is too low we invert the shades to create good contrast
-      invertShades = (parameters.lookNFeel.themeColor &&
-                      getContrast(parameters.lookNFeel.themeColor) < 1.7 ? -1 : 1);
-      var backImage = (parameters.lookNFeel.cardBack ? H5P.getPath(parameters.lookNFeel.cardBack.path, id) : null);
+      invertShades = parameters.lookNFeel.themeColor && getContrast(parameters.lookNFeel.themeColor) < 1.7 ? -1 : 1;
+      var backImage = parameters.lookNFeel.cardBack ? H5P.getPath(parameters.lookNFeel.cardBack.path, id) : null;
       cardStyles = MemoryGame.Card.determineStyles(parameters.lookNFeel.themeColor, invertShades, backImage);
     }
 
@@ -395,16 +402,40 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
       var cardParams = cardsToUse[i];
       if (MemoryGame.Card.isValid(cardParams)) {
         // Create first card
-        var cardTwo, cardOne = new MemoryGame.Card(cardParams.image, id, cardParams.imageAlt, parameters.l10n, cardParams.description, cardStyles, cardParams.audio);
+        var cardTwo,
+          cardOne = new MemoryGame.Card(
+            cardParams.image,
+            id,
+            cardParams.imageAlt,
+            parameters.l10n,
+            cardParams.description,
+            cardStyles,
+            cardParams.audio
+          );
 
         if (MemoryGame.Card.hasTwoImages(cardParams)) {
           // Use matching image for card two
-          cardTwo = new MemoryGame.Card(cardParams.match, id, cardParams.matchAlt, parameters.l10n, cardParams.description, cardStyles, cardParams.matchAudio);
+          cardTwo = new MemoryGame.Card(
+            cardParams.match,
+            id,
+            cardParams.matchAlt,
+            parameters.l10n,
+            cardParams.description,
+            cardStyles,
+            cardParams.matchAudio
+          );
           cardOne.hasTwoImages = cardTwo.hasTwoImages = true;
-        }
-        else {
+        } else {
           // Add two cards with the same image
-          cardTwo = new MemoryGame.Card(cardParams.image, id, cardParams.imageAlt, parameters.l10n, cardParams.description, cardStyles, cardParams.audio);
+          cardTwo = new MemoryGame.Card(
+            cardParams.image,
+            id,
+            cardParams.imageAlt,
+            parameters.l10n,
+            cardParams.description,
+            cardStyles,
+            cardParams.audio
+          );
         }
 
         // Add cards to card list for shuffeling
@@ -420,17 +451,17 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @param {H5P.jQuery} $container
      */
     self.attach = function ($container) {
-      this.triggerXAPI('attempted');
+      this.triggerXAPI("attempted");
       // TODO: Only create on first attach!
-      $wrapper = $container.addClass('h5p-memory-game').html('');
+      $wrapper = $container.addClass("h5p-memory-game").html("");
       if (invertShades === -1) {
-        $container.addClass('h5p-invert-shades');
+        $container.addClass("h5p-invert-shades");
       }
 
       // Add cards to list
-      var $list = $('<ul/>', {
-        role: 'application',
-        'aria-labelledby': 'h5p-intro-' + numInstances
+      var $list = $("<ul/>", {
+        role: "application",
+        "aria-labelledby": "h5p-intro-" + numInstances,
       });
       for (var i = 0; i < cards.length; i++) {
         cards[i].appendTo($list);
@@ -439,47 +470,50 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
       if ($list.children().length) {
         cards[0].makeTabbable();
 
-        $('<div/>', {
-          id: 'h5p-intro-' + numInstances,
-          'class': 'h5p-memory-hidden-read',
+        $("<div/>", {
+          id: "h5p-intro-" + numInstances,
+          class: "h5p-memory-hidden-read",
           html: parameters.l10n.label,
-          appendTo: $container
+          appendTo: $container,
         });
         $list.appendTo($container);
 
-        $bottom = $('<div/>', {
-          'class': 'h5p-programatically-focusable',
-          tabindex: '-1',
-          appendTo: $container
+        $bottom = $("<div/>", {
+          class: "h5p-programatically-focusable",
+          tabindex: "-1",
+          appendTo: $container,
         });
-        $taskComplete = $('<div/>', {
-          'class': 'h5p-memory-complete h5p-memory-hidden-read',
+        $taskComplete = $("<div/>", {
+          class: "h5p-memory-complete h5p-memory-hidden-read",
           html: parameters.l10n.done,
-          appendTo: $bottom
+          appendTo: $bottom,
         });
 
-        $feedback = $('<div class="h5p-feedback">' + parameters.l10n.feedback + '</div>').appendTo($bottom);
+        $feedback = $('<div class="h5p-feedback">' + parameters.l10n.feedback + "</div>").appendTo($bottom);
 
         // Add status bar
-        var $status = $('<dl class="h5p-status">' +
-                        '<dt>' + parameters.l10n.timeSpent + ':</dt>' +
-                        '<dd class="h5p-time-spent"><time role="timer" datetime="PT0M0S">0:00</time><span class="h5p-memory-hidden-read">.</span></dd>' +
-                        '<dt>' + parameters.l10n.cardTurns + ':</dt>' +
-                        '<dd class="h5p-card-turns">0<span class="h5p-memory-hidden-read">.</span></dd>' +
-                        '</dl>').appendTo($bottom);
+        var $status = $(
+          '<dl class="h5p-status">' +
+            "<dt>" +
+            parameters.l10n.timeSpent +
+            ":</dt>" +
+            '<dd class="h5p-time-spent"><time role="timer" datetime="PT0M0S">0:00</time><span class="h5p-memory-hidden-read">.</span></dd>' +
+            "<dt>" +
+            parameters.l10n.cardTurns +
+            ":</dt>" +
+            '<dd class="h5p-card-turns">0<span class="h5p-memory-hidden-read">.</span></dd>' +
+            "</dl>"
+        ).appendTo($bottom);
 
-        timer = new MemoryGame.Timer($status.find('time')[0]);
-        counter = new MemoryGame.Counter($status.find('.h5p-card-turns'));
+        timer = new MemoryGame.Timer($status.find("time")[0]);
+        counter = new MemoryGame.Counter($status.find(".h5p-card-turns"));
         popup = new MemoryGame.Popup($container, parameters.l10n);
 
         $container.click(function () {
           popup.close();
         });
-      }
-      else {
-        const $foo = $('<div/>')
-          .text('No card was added to the memory game!')
-          .appendTo($list);
+      } else {
+        const $foo = $("<div/>").text("No card was added to the memory game!").appendTo($list);
 
         $list.appendTo($container);
       }
@@ -493,15 +527,13 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @private
      */
     var scaleGameSize = function () {
-
       // Check how much space we have available
-      var $list = $wrapper.children('ul');
+      var $list = $wrapper.children("ul");
 
       var newMaxWidth = parseFloat(window.getComputedStyle($list[0]).width);
       if (maxWidth === newMaxWidth) {
         return; // Same size, no need to recalculate
-      }
-      else {
+      } else {
         maxWidth = newMaxWidth;
       }
 
@@ -527,27 +559,27 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
         // Calculate new column size in percentage and round it down (we don't
         // want things sticking out…)
         var colSize = Math.floor((100 / numCols) * 10000) / 10000;
-        $elements.css('width', colSize + '%').each(function (i, e) {
+        $elements.css("width", colSize + "%").each(function (i, e) {
           if (i === numCols) {
-            $(e).addClass('h5p-row-break');
+            $(e).addClass("h5p-row-break");
           }
         });
       }
 
       // Calculate how much one percentage of the standard/default size is
-      var onePercentage = ((CARD_STD_SIZE * numCols) + STD_FONT_SIZE) / 100;
+      var onePercentage = (CARD_STD_SIZE * numCols + STD_FONT_SIZE) / 100;
       var paddingSize = (STD_FONT_SIZE * LIST_PADDING) / onePercentage;
       var cardSize = (100 - paddingSize) / numCols;
-      var fontSize = (((maxWidth * (cardSize / 100)) * STD_FONT_SIZE) / CARD_STD_SIZE);
+      var fontSize = (maxWidth * (cardSize / 100) * STD_FONT_SIZE) / CARD_STD_SIZE;
 
       // We use font size to evenly scale all parts of the cards.
-      $list.css('font-size', fontSize + 'px');
+      $list.css("font-size", fontSize + "px");
       popup.setSize(fontSize);
       // due to rounding errors in browsers the margins may vary a bit…
     };
 
     if (parameters.behaviour && parameters.behaviour.useGrid && cardsToUse.length) {
-      self.on('resize', scaleGameSize);
+      self.on("resize", scaleGameSize);
     }
 
     /**
@@ -574,11 +606,12 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
      * @returns {Object} xAPI completed event
      */
     self.createXAPICompletedEvent = function () {
-      var completedEvent = self.createXAPIEventTemplate('completed');
+      var completedEvent = self.createXAPIEventTemplate("completed");
       completedEvent.setScoredResult(self.getScore(), self.getMaxScore(), self, true, true);
-      completedEvent.data.statement.result.duration = 'PT' + (Math.round(timer.getTime() / 10) / 100) + 'S';
+      completedEvent.data.statement.result.duration = "PT" + Math.round(timer.getTime() / 10) / 100 + "S";
+      completedEvent.data.statement.result.count = counter.getCount();
       return completedEvent;
-    }
+    };
 
     /**
      * Contract used by report rendering engine.
@@ -590,7 +623,7 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
     self.getXAPIData = function () {
       var completedEvent = self.createXAPICompletedEvent();
       return {
-        statement: completedEvent.data.statement
+        statement: completedEvent.data.statement,
       };
     };
   }
@@ -607,9 +640,13 @@ H5P.MemoryGame = (function (EventDispatcher, $) {
    * @return {number} From 1 to Infinity.
    */
   var getContrast = function (color) {
-    return 255 / ((parseInt(color.substr(1, 2), 16) * 299 +
-                   parseInt(color.substr(3, 2), 16) * 587 +
-                   parseInt(color.substr(5, 2), 16) * 144) / 1000);
+    return (
+      255 /
+      ((parseInt(color.substr(1, 2), 16) * 299 +
+        parseInt(color.substr(3, 2), 16) * 587 +
+        parseInt(color.substr(5, 2), 16) * 144) /
+        1000)
+    );
   };
 
   return MemoryGame;
