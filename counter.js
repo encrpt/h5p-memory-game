@@ -1,5 +1,5 @@
 (function (MemoryGame) {
-  
+
   /**
    * Keeps track of the number of cards that has been turned
    *
@@ -42,5 +42,7 @@
     self.getCount = function () {
       return current;
     };
+    
   };
+
 })(H5P.MemoryGame);
